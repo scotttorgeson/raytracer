@@ -1,26 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include <random>
 #include <thread>
 #include "sphere.h"
+#include "plane.h"
 #include "hitable_list.h"
 #include "float.h"
 #include "camera.h"
 #include "material.h"
-
-std::default_random_engine generator;
-std::uniform_real_distribution<float> distr( 0.0f, 1.0f );
-float drand48()
-{
-	float ret;
-	
-	do
-	{
-		ret = distr( generator );
-	} while ( ret == 1.0f );
-
-	return ret;
-}
+#include "Timer.h"
 
 vec3 color( const ray& r, hitable *world, int depth )
 {
@@ -89,6 +76,43 @@ hitable_list *random_scene()
 	return new hitable_list(list, i);
 }
 
+hitable_list *plane_scene()
+{
+	int n = 500;
+	hitable **list = new hitable*[n + 1];
+	list[0] = new plane( vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), new lambertian( vec3( 0.5f, 0.5f, 0.5f ) ) );
+	int i = 1;
+	for ( int a = -11; a < 11; a++ )
+	{
+		for ( int b = -11; b < 11; b++ )
+		{
+			float choose_mat = drand48();
+			vec3 center( a + 0.9f*drand48(), 0.2f, b + 0.9f*drand48() );
+			if ( ( center - vec3( 4.0f, 0.2f, 0.0f ) ).length() > 0.9f )
+			{
+				if ( choose_mat < 0.8f ) // diffuse
+				{
+					list[i++] = new sphere( center, 0.2f, new lambertian( vec3( drand48() * drand48(), drand48() * drand48(), drand48() * drand48() ) ) );
+				}
+				else if ( choose_mat < 0.95f ) // metal
+				{
+					list[i++] = new sphere( center, 0.2f, new metal( vec3( 0.5f * ( 1.0f + drand48() ), 0.5f * ( 1.0f + drand48() ), 0.5f * ( 1 + drand48() ) ), 0.5f * ( drand48() ) ) );
+				}
+				else // glass
+				{
+					list[i++] = new sphere( center, 0.2f, new dielectric( 1.5f ) );
+				}
+			}
+		}
+	}
+
+	list[i++] = new sphere( vec3( 0.0f, 1.0f, 0.0f ), 1.0f, new dielectric( 1.5f ) );
+	list[i++] = new sphere( vec3( -4.0f, 1.0f, 0.0f ), 1.0f, new lambertian( vec3( 0.4f, 0.2f, 0.1f ) ) );
+	list[i++] = new sphere( vec3( 4.0f, 1.0f, 0.0f ), 1.0f, new metal( vec3( 0.7f, 0.6f, 0.5f ), 0.0f ) );
+	list[i++] = new plane( vec3( 0.0f, 0.0f, -1.5f ), vec3( 0.0f, 0.0f, -1.0f ), new dielectric( 1.5f ) );
+	return new hitable_list( list, i );
+}
+
 struct pixel
 {
 	int ir;
@@ -132,6 +156,22 @@ void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* w
 	}
 }
 
+// 32.5 minutes for 1920x1080, 200 samples per pixel, 4 threads
+void high_quality( int& nx, int& ny, int& ns )
+{
+	nx = 1920;
+	ny = 1080;
+	ns = 200;
+}
+
+// 14.5 seconds for 192*2x108*2, 20 samples per pixel, 3 threads
+void fast_quality( int& nx, int& ny, int& ns )
+{
+	nx = 192*2;
+	ny = 108*2;
+	ns = 20;
+}
+
 // http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf
 // https://github.com/petershirley/raytracinginoneweekend
 int main(int argc, char* argv[])
@@ -158,22 +198,14 @@ int main(int argc, char* argv[])
 
 	std::cout << "Outputting to file: " << argv[1] << "\n";
 
-	//int nx = 200;
-	//int ny = 100;
+	const int threadCount = 3;
 
-	//const int nx = 800;
-	//const int ny = 400;
+	int nx, ny, ns;
+	//high_quality( nx, ny, ns );
+	fast_quality( nx, ny, ns );
 
-	//int nx = 1200;
-	//int ny = 800;
-
-	int nx = 1920;
-	int ny = 1080;
-
-	const int ns = 200;
-	const int threadCount = 4;
-
-	hitable_list *world = random_scene();
+	//hitable_list *world = random_scene();
+	hitable_list *world = plane_scene();
 
 	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	const vec3 lookat( 0.0f, 0.0f, 0.0f );
@@ -192,6 +224,9 @@ int main(int argc, char* argv[])
 	const int ns_remainder = ns % threadCount;
 
 	std::thread* threads = new std::thread[threadCount];
+
+	Timer timer;
+	timer.Start();
 	for ( int i = 0; i < threadCount; i++ )
 	{
 		int samples = ns_per_thread;
@@ -205,6 +240,8 @@ int main(int argc, char* argv[])
 	{
 		threads[i].join();
 	}
+	timer.Stop();
+	std::cout << "Finished rendering in " << timer.GetSeconds() << " seconds.\n";
 
 	imageFile << "P3\n" << nx << " " << ny << "\n255\n";
 	for ( int j = ny - 1; j >= 0; j-- )
@@ -230,21 +267,40 @@ int main(int argc, char* argv[])
 		}
 	}
 
+
+	// todo: better memory management
 	for ( int i = 0; i < threadCount; i++ )
 	{
 		delete[] images[i];
 	}
 	delete[] images;
-
+	
 	for ( int i = 0; i < world->list_size; i++ )
 	{
-		sphere* sphere_hitable = reinterpret_cast< sphere* >( world->list[i] );
-		delete sphere_hitable->mat_ptr;
-		delete sphere_hitable;
+		sphere* sphere_hitable = dynamic_cast< sphere* >( world->list[i] );
+		if ( sphere_hitable )
+		{
+			delete sphere_hitable->mat_ptr;
+			delete sphere_hitable;
+		}
+		else
+		{
+			plane* plane_hitable = dynamic_cast< plane* >( world->list[i] );
+			if ( plane_hitable )
+			{
+				delete plane_hitable->mat_ptr;
+				delete plane_hitable;
+			}
+		}
 	}
 
 	delete[] world->list;
 	delete world;
+
+	std::cout << "Press enter to continue...\n";
+	char c = 0;
+	while ( c != '\n' )
+		c = std::cin.get();
 
 	return 0;
 }

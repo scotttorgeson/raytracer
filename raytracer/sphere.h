@@ -21,7 +21,7 @@ bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) cons
 	float b = dot( oc, r.direction() );
 	float c = dot( oc, oc ) - radius * radius;
 	float discriminant = b * b - a * c;
-	if ( discriminant > 0 )
+	if ( discriminant > 0.0f )
 	{
 		float temp = ( -b - sqrt( b * b - a * c ) ) / a;
 		if ( temp < t_max && temp > t_min )
