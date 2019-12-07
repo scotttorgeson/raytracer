@@ -1,8 +1,16 @@
+//#define CHECK_MEM_LEAKS
+#ifdef CHECK_MEM_LEAKS
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif // CHECK_MEM_LEAKS
+
 #include <iostream>
 #include <fstream>
 #include <thread>
 #include "sphere.h"
 #include "plane.h"
+#include "triangle.h"
 #include "hitable_list.h"
 #include "float.h"
 #include "camera.h"
@@ -113,6 +121,32 @@ hitable_list *plane_scene()
 	return new hitable_list( list, i );
 }
 
+hitable_list *triangle_scene()
+{
+	int n = 4;
+	hitable **list = new hitable*[n + 1];
+	list[0] = new plane( vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 1.0f, 0.0f ), new lambertian( vec3( 0.0f, 0.2f, 0.8f ) ) );
+	int i = 1;
+
+	const vec3 bottom_left( -1.0f, 0.0f, -1.0f );
+	const vec3 bottom_right( 1.0f, 0.0f, -1.0f );
+	const vec3 top_left( -1.0f, 0.0f, 1.0f );
+	const vec3 top_right( 1.0f, 0.0f, 1.0f );
+	const vec3 point( 0.0f, 1.7f, 0.0f );
+
+	list[i++] = new triangle( bottom_left, bottom_right, point, new metal( vec3( 1.0f, 0.766f, 0.336f ), 0.1f ) );
+	list[i++] = new triangle( bottom_left, top_left, point, new metal( vec3( 1.0f, 0.766f, 0.336f ), 0.1f ) );
+	list[i++] = new triangle( top_left, top_right, point, new metal( vec3( 1.0f, 0.766f, 0.336f ), 0.1f ) );
+	list[i++] = new triangle( top_right, bottom_right, point, new metal( vec3( 1.0f, 0.766f, 0.336f ), 0.1f ) );
+
+	return new hitable_list( list, i );
+}
+
+hitable_list *empty_scene()
+{
+	return new hitable_list( nullptr, 0 );
+}
+
 struct pixel
 {
 	int ir;
@@ -205,11 +239,14 @@ int main(int argc, char* argv[])
 	fast_quality( nx, ny, ns );
 
 	//hitable_list *world = random_scene();
-	hitable_list *world = plane_scene();
+	//hitable_list *world = plane_scene();
+	hitable_list *world = triangle_scene();
+	//hitable_list *world = empty_scene();
 
 	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	const vec3 lookat( 0.0f, 0.0f, 0.0f );
-	const float dist_to_focus = 10.0f;
+	//const float dist_to_focus = 10.0f;
+	const float dist_to_focus = lookfrom.length();
 	const float aperture = 0.1f;
 	const float vfov = 20.0f;
 	camera cam( lookfrom, lookat, vec3( 0.0f, 1.0f, 0.0f ), vfov, float( nx ) / float( ny ), aperture, dist_to_focus );
@@ -267,7 +304,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-
 	// todo: better memory management
 	for ( int i = 0; i < threadCount; i++ )
 	{
@@ -275,32 +311,25 @@ int main(int argc, char* argv[])
 	}
 	delete[] images;
 	
-	for ( int i = 0; i < world->list_size; i++ )
+	if ( world->list )
 	{
-		sphere* sphere_hitable = dynamic_cast< sphere* >( world->list[i] );
-		if ( sphere_hitable )
+		for ( int i = 0; i < world->list_size; i++ )
 		{
-			delete sphere_hitable->mat_ptr;
-			delete sphere_hitable;
+			delete world->list[i];
 		}
-		else
-		{
-			plane* plane_hitable = dynamic_cast< plane* >( world->list[i] );
-			if ( plane_hitable )
-			{
-				delete plane_hitable->mat_ptr;
-				delete plane_hitable;
-			}
-		}
-	}
 
-	delete[] world->list;
+		delete[] world->list;
+	}
 	delete world;
 
 	std::cout << "Press enter to continue...\n";
 	char c = 0;
 	while ( c != '\n' )
 		c = std::cin.get();
+
+#ifdef CHECK_MEM_LEAKS
+	_CrtDumpMemoryLeaks();
+#endif // CHECK_MEM_LEAKS
 
 	return 0;
 }

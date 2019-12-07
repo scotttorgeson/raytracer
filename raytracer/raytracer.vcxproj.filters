@@ -48,5 +48,8 @@
     <ClInclude Include="plane.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="triangle.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
