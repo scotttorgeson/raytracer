@@ -34,3 +34,9 @@ vec3 random_in_unit_sphere()
 	} while ( p.squared_length() >= 1.0f );
 	return p;
 }
+
+float random_float( float time0, float time1 )
+{
+	std::uniform_real_distribution<float> distr_float( time0, time1 );
+	return distr_float( generator );
+}

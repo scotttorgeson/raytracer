@@ -54,5 +54,11 @@
     <ClInclude Include="scenes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="aabb.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_sphere.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

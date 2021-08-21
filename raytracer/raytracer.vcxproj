@@ -145,10 +145,12 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="hitable.h" />
     <ClInclude Include="hitable_list.h" />
     <ClInclude Include="material.h" />
+    <ClInclude Include="moving_sphere.h" />
     <ClInclude Include="plane.h" />
     <ClInclude Include="random.h" />
     <ClInclude Include="ray.h" />

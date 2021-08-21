@@ -179,10 +179,11 @@ void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* w
 
 void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, char* imageFilePath )
 {
-	hitable_list *world = random_scene();
+	//hitable_list *world = random_scene();
 	//hitable_list *world = plane_scene();
 	//hitable_list *world = triangle_scene();
 	//hitable_list *world = empty_scene();
+	hitable_list *world = moving_sphere_scene();
 
 	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	const vec3 lookat( 0.0f, 0.0f, 0.0f );
@@ -190,7 +191,7 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	const float dist_to_focus = lookfrom.length();
 	const float aperture = 0.1f;
 	const float vfov = 20.0f;
-	camera cam( lookfrom, lookat, vec3( 0.0f, 1.0f, 0.0f ), vfov, float( nx ) / float( ny ), aperture, dist_to_focus );
+	camera cam( lookfrom, lookat, vec3( 0.0f, 1.0f, 0.0f ), vfov, float( nx ) / float( ny ), aperture, dist_to_focus, 0.0, 1.0 );
 
 	const int ns_per_thread = ns / threadCount;
 	const int ns_remainder = ns % threadCount;
@@ -316,8 +317,8 @@ int main(int argc, char* argv[])
 
 	int nx, ny, ns;
 	//high_quality( nx, ny, ns );
-	//mid_quality( nx, ny, ns );
-	fast_quality( nx, ny, ns );
+	mid_quality( nx, ny, ns );
+	//fast_quality( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{
