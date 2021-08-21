@@ -34,7 +34,12 @@
 /.vs/*
 /Debug/*
 /Release/*
+/x64/Debug/*
+/x64/Release/*
 /raytracer/Debug/*
 /raytracer/Release/*
+/raytracer/x64/Debug/*
+/raytracer/x64/Release/*
+/SDL2-2.0.9/*
 
 *.ppm

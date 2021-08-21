@@ -51,5 +51,8 @@
     <ClInclude Include="triangle.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="scenes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
