@@ -66,7 +66,6 @@
     <ClInclude Include="texture.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="perlin.h" />
     <ClInclude Include="include_stb_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -77,6 +76,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="constant_medium.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="perlin.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

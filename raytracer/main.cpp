@@ -221,7 +221,8 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//hitable_list world = earth_scene();
 	//hitable_list world = simple_light_scene();
 	//hitable_list world = cornell_box_scene();
-	hitable_list world = cornell_box_smoke_scene();
+	//hitable_list world = cornell_box_smoke_scene();
+	hitable_list world = final_scene();
 
 	//vec3 background( 0.7f, 0.8f, 1.f );
 	vec3 background( 0.f, 0.f, 0.f );
@@ -233,7 +234,11 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//const vec3 lookfrom( 26.0f, 3.0f, 6.0f );
 	//const vec3 lookat( 0.0f, 2.0f, 0.0f );
 
-	const vec3 lookfrom( 278.f, 278.f, -800.f );
+	//const vec3 lookfrom( 278.f, 278.f, -800.f );
+	//const vec3 lookat( 278.f, 278.f, 0.f );
+	//const float vfov = 40.f;
+
+	const vec3 lookfrom( 478.f, 278.f, -600.f );
 	const vec3 lookat( 278.f, 278.f, 0.f );
 	const float vfov = 40.f;
 
@@ -358,6 +363,13 @@ void square_low_res_high_sample( int& nx, int& ny, int& ns )
 	ns = 200;
 }
 
+void square_low_res_low_sample( int& nx, int& ny, int& ns )
+{
+	nx = 600;
+	ny = 600;
+	ns = 50;
+}
+
 // http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf
 // https://github.com/petershirley/raytracinginoneweekend
 int main(int argc, char* argv[])
@@ -389,7 +401,8 @@ int main(int argc, char* argv[])
 	//low_res_high_sample( nx, ny, ns );
 	//mid_res_high_sample( nx, ny, ns );
 	//high_res_high_sample( nx, ny, ns );
-	square_low_res_high_sample( nx, ny, ns );
+	//square_low_res_high_sample( nx, ny, ns );
+	square_low_res_low_sample( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{

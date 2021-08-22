@@ -299,3 +299,68 @@ hitable_list cornell_box_smoke_scene()
 
 	return objects;
 }
+
+hitable_list final_scene()
+{
+	hitable_list boxes1;
+	auto ground = std::make_shared<lambertian>( vec3( 0.48f, 0.83f, 0.53f ) );
+
+	const int boxes_per_side = 20;
+	for ( int i = 0; i < boxes_per_side; i++ ) {
+		for ( int j = 0; j < boxes_per_side; j++ ) {
+			auto w = 100.f;
+			auto x0 = -1000.f + i * w;
+			auto z0 = -1000.f + j * w;
+			auto y0 = 0.f;
+			auto x1 = x0 + w;
+			auto y1 = random_float( 1.f, 101.f );
+			auto z1 = z0 + w;
+
+			boxes1.add( std::make_shared<box>( vec3( x0, y0, z0 ), vec3( x1, y1, z1 ), ground ) );
+		}
+	}
+
+	hitable_list objects;
+
+	objects.add( std::make_shared<bvh_node>( boxes1, 0.f, 1.f ) );
+
+	auto light = std::make_shared<diffuse_light>( vec3( 7.f, 7.f, 7.f ) );
+	objects.add( std::make_shared<xz_rect>( 123.f, 423.f, 147.f, 412.f, 554.f, light ) );
+
+	auto center1 = vec3( 400.f, 400.f, 200.f );
+	auto center2 = center1 + vec3( 30.f, 0.f, 0.f );
+	auto moving_sphere_material = std::make_shared<lambertian>( vec3( 0.7f, 0.3f, 0.1f ) );
+	objects.add( std::make_shared<moving_sphere>( center1, center2, 50.f, moving_sphere_material, 0.f, 1.f ) );
+
+	objects.add( std::make_shared<sphere>( vec3( 260.f, 150.f, 45.f ), 50.f, std::make_shared<dielectric>( 1.5f ) ) );
+	objects.add( std::make_shared<sphere>(
+		vec3( 0.f, 150.f, 145.f ), 50.f, std::make_shared<metal>( vec3( 0.8f, 0.8f, 0.9f ), 1.f )
+		) );
+
+	auto boundary = std::make_shared<sphere>( vec3( 360.f, 150.f, 145.f ), 70.f, std::make_shared<dielectric>( 1.5f ) );
+	objects.add( boundary );
+	objects.add( std::make_shared<constant_medium>( boundary, 0.2f, vec3( 0.2f, 0.4f, 0.9f ) ) );
+	boundary = std::make_shared<sphere>( vec3( 0.f, 0.f, 0.f ), 5000.f, std::make_shared<dielectric>( 1.5f ) );
+	objects.add( std::make_shared<constant_medium>( boundary, .0001f, vec3( 1.f, 1.f, 1.f ) ) );
+
+	auto emat = std::make_shared<lambertian>( std::make_shared<image_texture>( "planets//earthmap.jpg" ) );
+	objects.add( std::make_shared<sphere>( vec3( 400.f, 200.f, 400.f ), 100.f, emat ) );
+	auto pertext = std::make_shared<noise_texture>( 0.1f );
+	objects.add( std::make_shared<sphere>( vec3( 220.f, 280.f, 300.f ), 80.f, std::make_shared<lambertian>( pertext ) ) );
+
+	hitable_list boxes2;
+	auto white = std::make_shared<lambertian>( vec3( .73f, .73f, .73f ) );
+	int ns = 1000;
+	for ( int j = 0; j < ns; j++ ) {
+		boxes2.add( std::make_shared<sphere>( vec3( random_float( 0.f, 165.f ), random_float( 0.f, 165.f ), random_float( 0.f, 165.f ) ), 10.f, white ) );
+	}
+
+	objects.add( std::make_shared<translate>(
+		std::make_shared<rotate_y>(
+			std::make_shared<bvh_node>( boxes2, 0.f, 1.f ), 15.f ),
+		vec3( -100.f, 270.f, 395.f )
+		)
+	);
+
+	return objects;
+}
