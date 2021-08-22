@@ -8,6 +8,7 @@
 #include "bvh_node.h"
 #include "aarect.h"
 #include "box.h"
+#include "constant_medium.h"
 #include <vector>
 #include <memory>
 
@@ -265,6 +266,36 @@ hitable_list cornell_box_scene()
 	box2 = std::make_shared<rotate_y>( box2, -18.f );
 	box2 = std::make_shared<translate>( box2, vec3( 130.f, 0.f, 65.f ) );
 	objects.add( box2 );
+
+	return objects;
+}
+
+hitable_list cornell_box_smoke_scene()
+{
+	hitable_list objects;
+
+	auto red = std::make_shared<lambertian>( vec3( 0.65f, 0.05f, 0.05f ) );
+	auto white = std::make_shared<lambertian>( vec3( 0.73f, 0.73f, 0.73f ) );
+	auto green = std::make_shared<lambertian>( vec3( 0.12f, 0.45f, 0.15f ) );
+	auto light = std::make_shared<diffuse_light>( vec3( 7.f, 7.f, 7.f ) );
+
+	objects.add( std::make_shared<yz_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, green ) );
+	objects.add( std::make_shared<yz_rect>( 0.f, 555.f, 0.f, 555.f, 0.f, red ) );
+	objects.add( std::make_shared<xz_rect>( 113.f, 443.f, 127.f, 432.f, 554.f, light ) );
+	objects.add( std::make_shared<xz_rect>( 0.f, 555.f, 0.f, 555.f, 0.f, white ) );
+	objects.add( std::make_shared<xz_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
+	objects.add( std::make_shared<xy_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
+
+	std::shared_ptr<hitable> box1 = std::make_shared<box>( vec3( 0.f, 0.f, 0.f ), vec3( 165.f, 330.f, 165.f ), white );
+	box1 = std::make_shared<rotate_y>( box1, 15.f );
+	box1 = std::make_shared<translate>( box1, vec3( 265.f, 0.f, 295.f ) );
+
+	std::shared_ptr<hitable> box2 = std::make_shared<box>( vec3( 0.f, 0.f, 0.f ), vec3( 165.f, 165.f, 165.f ), white );
+	box2 = std::make_shared<rotate_y>( box2, -18.f );
+	box2 = std::make_shared<translate>( box2, vec3( 130.f, 0.f, 65.f ) );
+
+	objects.add( std::make_shared<constant_medium>( box1, 0.01f, vec3( 0.f, 0.f, 0.f ) ) );
+	objects.add( std::make_shared<constant_medium>( box2, 0.01f, vec3( 1.f, 1.f, 1.f ) ) );
 
 	return objects;
 }

@@ -175,20 +175,30 @@ void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* w
 				if ( quit )
 					return;
 
-				float u = float( i + drand48() ) / float( nx );
-				float v = float( j + drand48() ) / float( ny );
+				float u = float( i + drand48() ) / float( nx - 1 );
+				float v = float( j + drand48() ) / float( ny - 1 );
 
 				ray r = cam->get_ray( u, v );
-				vec3 p = r.point_at_parameter( 2.0f );
 				//col += color( r, world, 0 );
 				col += ray_color( r, background, *world, max_depth );
 			}
 
-			col /= float( ns );
-			col = vec3( sqrt( col[0] ), sqrt( col[1] ), sqrt( col[2] ) );
-			int ir = int( 255.99*col[0] );
-			int ig = int( 255.99*col[1] );
-			int ib = int( 255.99*col[2] );
+			float r = col.x();
+			float g = col.y();
+			float b = col.z();
+
+			if ( r != r ) r = 0.f;
+			if ( g != g ) g = 0.f;
+			if ( b != b ) b = 0.f;
+
+			float scale = 1.f / static_cast< float >( ns );
+			r = sqrt( scale * r );
+			g = sqrt( scale * g );
+			b = sqrt( scale * b );
+
+			int ir = static_cast< int >( 256 * clamp_float( r, 0.f, 0.999f ) );
+			int ig = static_cast< int >( 256 * clamp_float( g, 0.f, 0.999f ) );
+			int ib = static_cast< int >( 256 * clamp_float( b, 0.f, 0.999f ) );
 
 			pixel* pix = get_pixel( im, i, j, nx );
 			pix->ir = ir;
@@ -210,7 +220,8 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//hitable_list world = two_perlin_spheres_scene();
 	//hitable_list world = earth_scene();
 	//hitable_list world = simple_light_scene();
-	hitable_list world = cornell_box_scene();
+	//hitable_list world = cornell_box_scene();
+	hitable_list world = cornell_box_smoke_scene();
 
 	//vec3 background( 0.7f, 0.8f, 1.f );
 	vec3 background( 0.f, 0.f, 0.f );
