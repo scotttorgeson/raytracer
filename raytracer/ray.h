@@ -11,6 +11,11 @@ public:
 	vec3 point_at_parameter( float t ) const { return orig + t * dir; }
 	float time() const { return tm; }
 
+	vec3 at( float t ) const
+	{
+		return orig + t * dir;
+	}
+
 	vec3 orig;
 	vec3 dir;
 	float tm;

@@ -6,6 +6,7 @@
 #include "hitable_list.h"
 #include "moving_sphere.h"
 #include "bvh_node.h"
+#include "aarect.h"
 #include <vector>
 #include <memory>
 
@@ -221,4 +222,19 @@ hitable_list earth_scene()
 	auto earth_surface = std::make_shared<lambertian>( earth_texture );
 	auto globe = std::make_shared<sphere>( vec3( 0.f, 0.f, 0.f ), 2.f, earth_surface );
 	return hitable_list( globe );
+}
+
+hitable_list simple_light_scene()
+{
+	hitable_list objects;
+
+	auto pertex = std::make_shared<noise_texture>( 4.f );
+	objects.add( std::make_shared<sphere>( vec3( 0.f, -1000.f, 0.f ), 1000.f, std::make_shared<lambertian>( pertex ) ) );
+	objects.add( std::make_shared<sphere>( vec3( 0.f, 2.f, 0.f ), 2.f, std::make_shared<lambertian>( pertex ) ) );
+
+	auto difflight = std::make_shared<diffuse_light>( vec3( 4.f, 4.f, 4.f ) );
+	//objects.add( std::make_shared<xy_rect>( 3.f, 5.f, 1.f, 3.f, -2.f, difflight ) );
+	objects.add( std::make_shared<sphere>( vec3( 0.f, 8.f, 0.f ), 2.f, difflight ) );
+
+	return objects;
 }

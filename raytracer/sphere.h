@@ -41,7 +41,8 @@ bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) cons
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter( rec.t );
-			rec.normal = ( rec.p - center ) / radius;
+			vec3 outward_normal = ( rec.p - center ) / radius;
+			rec.set_face_normal( r, outward_normal );
 			rec.mat_ptr = mat_ptr;
 			get_sphere_uv( rec.normal, rec.u, rec.v );
 			return true;
@@ -51,7 +52,8 @@ bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) cons
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter( rec.t );
-			rec.normal = ( rec.p - center ) / radius;
+			vec3 outward_normal = ( rec.p - center ) / radius;
+			rec.set_face_normal( r, outward_normal );
 			rec.mat_ptr = mat_ptr;
 			get_sphere_uv( rec.normal, rec.u, rec.v );
 			return true;

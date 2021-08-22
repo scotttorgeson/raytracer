@@ -41,7 +41,8 @@ bool moving_sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter( rec.t );
-			rec.normal = ( rec.p - sphere_center ) / radius;
+			vec3 outward_normal = ( rec.p - sphere_center ) / radius;
+			rec.set_face_normal( r, outward_normal );
 			rec.mat_ptr = mat_ptr;
 			return true;
 		}
@@ -50,7 +51,8 @@ bool moving_sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec
 		{
 			rec.t = temp;
 			rec.p = r.point_at_parameter( rec.t );
-			rec.normal = ( rec.p - sphere_center ) / radius;
+			vec3 outward_normal = ( rec.p - sphere_center ) / radius;
+			rec.set_face_normal( r, outward_normal );
 			rec.mat_ptr = mat_ptr;
 			return true;
 		}

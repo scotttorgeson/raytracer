@@ -111,6 +111,26 @@ void cleanup_sdl()
 	SDL_Quit();
 }
 
+vec3 ray_color( const ray& r, const vec3& background, const hitable& world, int depth )
+{
+	hit_record rec;
+
+	if ( depth <= 0 )
+		return vec3( 0.f, 0.f, 0.f );
+
+	if ( !world.hit( r, 0.001f, FLT_MAX, rec ) )
+		return background;
+
+	ray scattered;
+	vec3 attenuation;
+	vec3 emitted = rec.mat_ptr->emitted( rec.u, rec.v, rec.p );
+
+	if ( !rec.mat_ptr->scatter( r, rec, attenuation, scattered ) )
+		return emitted;
+
+	return emitted + attenuation * ray_color( scattered, background, world, depth - 1 );
+}
+
 vec3 color( const ray& r, hitable *world, int depth )
 {
 	hit_record rec;
@@ -143,7 +163,7 @@ inline pixel* get_pixel( pixel* im, int i, int j, int width )
 	return &im[j * width + i];
 }
 
-void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* world, pixel* im )
+void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* world, pixel* im, vec3 background, int max_depth )
 {
 	for ( int j = ny - 1; j >= 0; j-- )
 	{
@@ -160,7 +180,8 @@ void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* w
 
 				ray r = cam->get_ray( u, v );
 				vec3 p = r.point_at_parameter( 2.0f );
-				col += color( r, world, 0 );
+				//col += color( r, world, 0 );
+				col += ray_color( r, background, *world, max_depth );
 			}
 
 			col /= float( ns );
@@ -187,10 +208,19 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//hitable_list world = bvh_scene();
 	//hitable_list world = two_spheres_scene();
 	//hitable_list world = two_perlin_spheres_scene();
-	hitable_list world = earth_scene();
+	//hitable_list world = earth_scene();
+	hitable_list world = simple_light_scene();
 
-	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
-	const vec3 lookat( 0.0f, 0.0f, 0.0f );
+	//vec3 background( 0.7f, 0.8f, 1.f );
+	vec3 background( 0.f, 0.f, 0.f );
+
+	const int max_depth = 50;
+	//const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
+	//const vec3 lookat( 0.0f, 0.0f, 0.0f );
+
+	const vec3 lookfrom( 26.0f, 3.0f, 6.0f );
+	const vec3 lookat( 0.0f, 2.0f, 0.0f );
+
 	//const float dist_to_focus = 10.0f;
 	const float dist_to_focus = lookfrom.length();
 	const float aperture = 0.1f;
@@ -210,7 +240,7 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 		if ( i == 0 )
 			samples += ns_remainder;
 
-		threads[i] = std::thread( raytrace, &cam, ny, nx, samples, &world, images[i] );
+		threads[i] = std::thread( raytrace, &cam, ny, nx, samples, &world, images[i], background, max_depth );
 	}
 
 	for ( int i = 0; i < threadCount; i++ )
@@ -284,6 +314,27 @@ void fast_quality( int& nx, int& ny, int& ns )
 	ns = 20;
 }
 
+void low_res_high_sample( int& nx, int& ny, int& ns )
+{
+	nx = 192 * 2;
+	ny = 108 * 2;
+	ns = 400;
+}
+
+void mid_res_high_sample( int& nx, int& ny, int& ns )
+{
+	nx = 192 * 4;
+	ny = 108 * 4;
+	ns = 400;
+}
+
+void high_res_high_sample( int& nx, int& ny, int& ns )
+{
+	nx = 1920;
+	ny = 1080;
+	ns = 400;
+}
+
 // http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf
 // https://github.com/petershirley/raytracinginoneweekend
 int main(int argc, char* argv[])
@@ -310,8 +361,11 @@ int main(int argc, char* argv[])
 
 	int nx, ny, ns;
 	//high_quality( nx, ny, ns );
-	mid_quality( nx, ny, ns );
+	//mid_quality( nx, ny, ns );
 	//fast_quality( nx, ny, ns );
+	low_res_high_sample( nx, ny, ns );
+	//mid_res_high_sample( nx, ny, ns );
+	//high_res_high_sample( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{
