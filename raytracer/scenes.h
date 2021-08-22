@@ -256,8 +256,15 @@ hitable_list cornell_box_scene()
 	objects.add( std::make_shared<xz_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
 	objects.add( std::make_shared<xy_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
 
-	objects.add( std::make_shared<box>( vec3( 130.f, 0.f, 65.f ), vec3( 295.f, 165.f, 230.f ), white ) );
-	objects.add( std::make_shared<box>( vec3( 265.f, 0.f, 295.f ), vec3( 430.f, 330.f, 460.f ), white ) );
+	std::shared_ptr<hitable> box1 = std::make_shared<box>( vec3( 0.f, 0.f, 0.f ), vec3( 165.f, 330.f, 165.f ), white );
+	box1 = std::make_shared<rotate_y>( box1, 15.f );
+	box1 = std::make_shared<translate>( box1, vec3( 265.f, 0.f, 295.f ) );
+	objects.add( box1 );
+
+	std::shared_ptr<hitable> box2 = std::make_shared<box>( vec3( 0.f, 0.f, 0.f ), vec3( 165.f, 165.f, 165.f ), white );
+	box2 = std::make_shared<rotate_y>( box2, -18.f );
+	box2 = std::make_shared<translate>( box2, vec3( 130.f, 0.f, 65.f ) );
+	objects.add( box2 );
 
 	return objects;
 }
