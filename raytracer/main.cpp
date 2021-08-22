@@ -309,7 +309,7 @@ int main(int argc, char* argv[])
 
 	int nx, ny, ns;
 	//high_quality( nx, ny, ns );
-	//mid_quality( nx, ny, ns );
+	mid_quality( nx, ny, ns );
 	//fast_quality( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )

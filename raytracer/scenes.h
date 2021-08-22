@@ -206,9 +206,10 @@ hitable_list two_perlin_spheres_scene()
 {
 	hitable_list objects;
 
-	auto pertex = std::make_shared<noise_texture>();
+	auto pertex = std::make_shared<noise_texture>( 4.f );
 
 	objects.add( std::make_shared<sphere>( vec3( 0.f, -1000.f, 0.f ), 1000.f, std::make_shared<lambertian>( pertex ) ) );
+	//objects.add( std::make_shared<sphere>( vec3( 0.f, -1000.f, 0.f ), 1000.f, std::make_shared<dielectric>( 1.5f ) ) );
 	objects.add( std::make_shared<sphere>( vec3( 0.f, 2.f, 0.f ), 2.f, std::make_shared<lambertian>( pertex ) ) );
 
 	return objects;

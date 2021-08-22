@@ -53,11 +53,13 @@ class noise_texture : public texture
 {
 public:
 	noise_texture() {}
+	noise_texture( float sc ) : scale( sc ) {}
 
 	virtual vec3 value( float u, float v, const vec3& p ) const override
 	{
-		return vec3( 1.f, 1.f, 1.f ) * noise.noise( p );
+		return vec3( 1.f, 1.f, 1.f ) * 0.5f * ( 1.f + sin( scale * p.z() + 10.f * noise.turb( scale * p ) ) );
 	}
 
 	perlin noise;
+	float scale;
 };
