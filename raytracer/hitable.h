@@ -18,4 +18,5 @@ class hitable
 public:
 	virtual ~hitable() {}
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const = 0;
+	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const = 0;
 };

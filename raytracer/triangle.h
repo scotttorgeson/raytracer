@@ -10,6 +10,7 @@ public:
 	triangle( vec3 pt0, vec3 pt1, vec3 pt2, material *m ) : point0( pt0 ), point1( pt1 ), point2( pt2 ), mat_ptr( m ) {}
 	virtual ~triangle() { if ( mat_ptr ) delete mat_ptr; mat_ptr = nullptr; }
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const;
+	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const override;
 
 	vec3 point0;
 	vec3 point1;
@@ -59,4 +60,13 @@ bool triangle::hit( const ray& r, float t_min, float t_max, hit_record& rec ) co
 	
 	// line defined by the ray direction intersects but the ray does not
 	return false;
+}
+
+bool triangle::bounding_box( float time0, float time1, aabb& output_box ) const
+{
+	output_box = aabb( vec3( 0.f, 0.f, 0.f ), vec3( 0.f, 0.f, 0.f ) );
+	output_box = expand_box( output_box, point0 );
+	output_box = expand_box( output_box, point1 );
+	output_box = expand_box( output_box, point2 );
+	return true;
 }

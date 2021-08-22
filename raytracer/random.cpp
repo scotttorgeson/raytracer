@@ -40,3 +40,9 @@ float random_float( float time0, float time1 )
 	std::uniform_real_distribution<float> distr_float( time0, time1 );
 	return distr_float( generator );
 }
+
+int random_int( int min, int max )
+{
+	std::uniform_int_distribution<int> distr_int( min, max );
+	return distr_int( generator );
+}

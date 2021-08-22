@@ -10,6 +10,7 @@ public:
 	plane( vec3 pt, vec3 norm, material *m ) : point( pt ), normal( norm ), mat_ptr( m ) {}
 	virtual ~plane() { if ( mat_ptr ) delete mat_ptr; mat_ptr = nullptr; }
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const;
+	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const override;
 
 	vec3 point;
 	vec3 normal;
@@ -30,4 +31,10 @@ bool plane::hit( const ray& r, float t_min, float t_max, hit_record& rec ) const
 	}
 
 	return false;
+}
+
+bool plane::bounding_box( float time0, float time1, aabb& output_box ) const
+{
+	output_box = aabb( vec3( -FLT_MAX, -FLT_MAX, -FLT_MAX ), vec3( FLT_MAX, FLT_MAX, FLT_MAX ) );
+	return true;
 }

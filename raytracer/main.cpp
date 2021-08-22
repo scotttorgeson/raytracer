@@ -179,11 +179,12 @@ void raytrace( camera* cam, const int ny, const int nx, const int ns, hitable* w
 
 void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, char* imageFilePath )
 {
-	//hitable_list *world = random_scene();
-	//hitable_list *world = plane_scene();
-	//hitable_list *world = triangle_scene();
-	//hitable_list *world = empty_scene();
-	hitable_list *world = moving_sphere_scene();
+	//hitable_list world = random_scene();
+	//hitable_list world = plane_scene();
+	//hitable_list world = triangle_scene();
+	//hitable_list world = empty_scene();
+	//hitable_list world = moving_sphere_scene();
+	hitable_list world = bvh_scene();
 
 	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	const vec3 lookat( 0.0f, 0.0f, 0.0f );
@@ -206,7 +207,7 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 		if ( i == 0 )
 			samples += ns_remainder;
 
-		threads[i] = std::thread( raytrace, &cam, ny, nx, samples, world, images[i] );
+		threads[i] = std::thread( raytrace, &cam, ny, nx, samples, &world, images[i] );
 	}
 
 	for ( int i = 0; i < threadCount; i++ )
@@ -255,17 +256,6 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	}
 
 	delete [] threads;
-
-	if ( world->list )
-	{
-		for ( int i = 0; i < world->list_size; i++ )
-		{
-			delete world->list[i];
-		}
-
-		delete[] world->list;
-	}
-	delete world;
 }
 
 // 32.5 minutes for 1920x1080, 200 samples per pixel, 4 threads
@@ -317,8 +307,8 @@ int main(int argc, char* argv[])
 
 	int nx, ny, ns;
 	//high_quality( nx, ny, ns );
-	mid_quality( nx, ny, ns );
-	//fast_quality( nx, ny, ns );
+	//mid_quality( nx, ny, ns );
+	fast_quality( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{
