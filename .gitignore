@@ -40,6 +40,8 @@
 /raytracer/Release/*
 /raytracer/x64/Debug/*
 /raytracer/x64/Release/*
+/raytracer/planets/*
 /SDL2-2.0.9/*
+/stb/*
 
 *.ppm

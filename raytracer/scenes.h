@@ -214,3 +214,11 @@ hitable_list two_perlin_spheres_scene()
 
 	return objects;
 }
+
+hitable_list earth_scene()
+{
+	auto earth_texture = std::make_shared<image_texture>( "planets//earthmap.jpg" );
+	auto earth_surface = std::make_shared<lambertian>( earth_texture );
+	auto globe = std::make_shared<sphere>( vec3( 0.f, 0.f, 0.f ), 2.f, earth_surface );
+	return hitable_list( globe );
+}

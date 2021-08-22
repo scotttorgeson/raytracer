@@ -67,5 +67,8 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="perlin.h" />
+    <ClInclude Include="include_stb_image.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
