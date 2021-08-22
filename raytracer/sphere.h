@@ -7,14 +7,24 @@ class sphere : public hitable
 {
 public:
 	sphere() {}
-	sphere( vec3 cen, float r, material *m ) :center( cen ), radius( r ), mat_ptr( m ) {}
-	virtual ~sphere() { if ( mat_ptr ) delete mat_ptr; mat_ptr = nullptr;  }
+	sphere( vec3 cen, float r, std::shared_ptr<material> m ) :center( cen ), radius( r ), mat_ptr( m ) {}
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const;
 	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const override;
 
 	vec3 center;
 	float radius;
-	material *mat_ptr;
+	std::shared_ptr<material> mat_ptr;
+
+private:
+	static void get_sphere_uv( const vec3& p, float& u, float& v )
+	{
+		const float pi = 3.1415926535897932385f;
+		auto theta = acos( -p.y() );
+		auto phi = atan2( -p.z(), p.x() ) + pi;
+
+		u = phi / ( 2.f * pi );
+		v = theta / pi;
+	}
 };
 
 bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) const
@@ -33,6 +43,7 @@ bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) cons
 			rec.p = r.point_at_parameter( rec.t );
 			rec.normal = ( rec.p - center ) / radius;
 			rec.mat_ptr = mat_ptr;
+			get_sphere_uv( rec.normal, rec.u, rec.v );
 			return true;
 		}
 		temp = ( -b + sqrt( b * b - a * c ) ) / a;
@@ -42,6 +53,7 @@ bool sphere::hit( const ray& r, float t_min, float t_max, hit_record& rec ) cons
 			rec.p = r.point_at_parameter( rec.t );
 			rec.normal = ( rec.p - center ) / radius;
 			rec.mat_ptr = mat_ptr;
+			get_sphere_uv( rec.normal, rec.u, rec.v );
 			return true;
 		}
 	}

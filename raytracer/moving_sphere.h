@@ -9,8 +9,7 @@ class moving_sphere : public hitable
 {
 public:
 	moving_sphere() {}
-	moving_sphere( vec3 cen0, vec3 cen1, float r, material *m, float _time0, float _time1 ) :center0( cen0 ), center1( cen1 ), radius( r ), mat_ptr( m ), time0(_time0), time1(_time1) {}
-	virtual ~moving_sphere() { if ( mat_ptr ) delete mat_ptr; mat_ptr = nullptr; }
+	moving_sphere( vec3 cen0, vec3 cen1, float r, std::shared_ptr<material> m, float _time0, float _time1 ) :center0( cen0 ), center1( cen1 ), radius( r ), mat_ptr( m ), time0(_time0), time1(_time1) {}
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const;
 	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const override;
 	vec3 center( float time ) const;
@@ -18,7 +17,7 @@ public:
 	vec3 center0;
 	vec3 center1;
 	float radius;
-	material *mat_ptr;
+	std::shared_ptr<material> mat_ptr;
 	float time0, time1;
 };
 

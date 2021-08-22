@@ -7,14 +7,13 @@ class plane : public hitable
 {
 public:
 	plane() {}
-	plane( vec3 pt, vec3 norm, material *m ) : point( pt ), normal( norm ), mat_ptr( m ) {}
-	virtual ~plane() { if ( mat_ptr ) delete mat_ptr; mat_ptr = nullptr; }
+	plane( vec3 pt, vec3 norm, std::shared_ptr<material> m ) : point( pt ), normal( norm ), mat_ptr( m ) {}
 	virtual bool hit( const ray& r, float t_min, float t_max, hit_record& rec ) const;
 	virtual bool bounding_box( float time0, float time1, aabb& output_box ) const override;
 
 	vec3 point;
 	vec3 normal;
-	material *mat_ptr;
+	std::shared_ptr<material> mat_ptr;
 };
 
 bool plane::hit( const ray& r, float t_min, float t_max, hit_record& rec ) const

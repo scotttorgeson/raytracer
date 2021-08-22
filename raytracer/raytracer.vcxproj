@@ -157,6 +157,7 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="scenes.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="triangle.h" />
     <ClInclude Include="vec3.h" />

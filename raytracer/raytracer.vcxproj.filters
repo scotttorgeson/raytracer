@@ -63,5 +63,8 @@
     <ClInclude Include="bvh_node.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

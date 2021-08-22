@@ -184,7 +184,8 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//hitable_list world = triangle_scene();
 	//hitable_list world = empty_scene();
 	//hitable_list world = moving_sphere_scene();
-	hitable_list world = bvh_scene();
+	//hitable_list world = bvh_scene();
+	hitable_list world = two_spheres_scene();
 
 	const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	const vec3 lookat( 0.0f, 0.0f, 0.0f );
