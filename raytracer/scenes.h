@@ -7,6 +7,7 @@
 #include "moving_sphere.h"
 #include "bvh_node.h"
 #include "aarect.h"
+#include "box.h"
 #include <vector>
 #include <memory>
 
@@ -235,6 +236,28 @@ hitable_list simple_light_scene()
 	auto difflight = std::make_shared<diffuse_light>( vec3( 4.f, 4.f, 4.f ) );
 	//objects.add( std::make_shared<xy_rect>( 3.f, 5.f, 1.f, 3.f, -2.f, difflight ) );
 	objects.add( std::make_shared<sphere>( vec3( 0.f, 8.f, 0.f ), 2.f, difflight ) );
+
+	return objects;
+}
+
+hitable_list cornell_box_scene()
+{
+	hitable_list objects;
+
+	auto red = std::make_shared<lambertian>( vec3( 0.65f, 0.05f, 0.05f ) );
+	auto white = std::make_shared<lambertian>( vec3( 0.73f, 0.73f, 0.73f ) );
+	auto green = std::make_shared<lambertian>( vec3( 0.12f, 0.45f, 0.15f ) );
+	auto light = std::make_shared<diffuse_light>( vec3( 15.f, 15.f, 15.f ) );
+
+	objects.add( std::make_shared<yz_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, green ) );
+	objects.add( std::make_shared<yz_rect>( 0.f, 555.f, 0.f, 555.f, 0.f, red ) );
+	objects.add( std::make_shared<xz_rect>( 213.f, 343.f, 227.f, 332.f, 554.f, light ) );
+	objects.add( std::make_shared<xz_rect>( 0.f, 555.f, 0.f, 555.f, 0.f, white ) );
+	objects.add( std::make_shared<xz_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
+	objects.add( std::make_shared<xy_rect>( 0.f, 555.f, 0.f, 555.f, 555.f, white ) );
+
+	objects.add( std::make_shared<box>( vec3( 130.f, 0.f, 65.f ), vec3( 295.f, 165.f, 230.f ), white ) );
+	objects.add( std::make_shared<box>( vec3( 265.f, 0.f, 295.f ), vec3( 430.f, 330.f, 460.f ), white ) );
 
 	return objects;
 }

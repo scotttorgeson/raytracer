@@ -209,7 +209,8 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//hitable_list world = two_spheres_scene();
 	//hitable_list world = two_perlin_spheres_scene();
 	//hitable_list world = earth_scene();
-	hitable_list world = simple_light_scene();
+	//hitable_list world = simple_light_scene();
+	hitable_list world = cornell_box_scene();
 
 	//vec3 background( 0.7f, 0.8f, 1.f );
 	vec3 background( 0.f, 0.f, 0.f );
@@ -218,13 +219,17 @@ void raytrace_thread( int nx, int ny, int ns, int threadCount, pixel** images, c
 	//const vec3 lookfrom( 13.0f, 2.0f, 3.0f );
 	//const vec3 lookat( 0.0f, 0.0f, 0.0f );
 
-	const vec3 lookfrom( 26.0f, 3.0f, 6.0f );
-	const vec3 lookat( 0.0f, 2.0f, 0.0f );
+	//const vec3 lookfrom( 26.0f, 3.0f, 6.0f );
+	//const vec3 lookat( 0.0f, 2.0f, 0.0f );
+
+	const vec3 lookfrom( 278.f, 278.f, -800.f );
+	const vec3 lookat( 278.f, 278.f, 0.f );
+	const float vfov = 40.f;
 
 	//const float dist_to_focus = 10.0f;
 	const float dist_to_focus = lookfrom.length();
 	const float aperture = 0.1f;
-	const float vfov = 20.0f;
+	//const float vfov = 20.0f;
 	camera cam( lookfrom, lookat, vec3( 0.0f, 1.0f, 0.0f ), vfov, float( nx ) / float( ny ), aperture, dist_to_focus, 0.0, 1.0 );
 
 	const int ns_per_thread = ns / threadCount;
@@ -318,21 +323,28 @@ void low_res_high_sample( int& nx, int& ny, int& ns )
 {
 	nx = 192 * 2;
 	ny = 108 * 2;
-	ns = 400;
+	ns = 200;
 }
 
 void mid_res_high_sample( int& nx, int& ny, int& ns )
 {
 	nx = 192 * 4;
 	ny = 108 * 4;
-	ns = 400;
+	ns = 200;
 }
 
 void high_res_high_sample( int& nx, int& ny, int& ns )
 {
 	nx = 1920;
 	ny = 1080;
-	ns = 400;
+	ns = 200;
+}
+
+void square_low_res_high_sample( int& nx, int& ny, int& ns )
+{
+	nx = 600;
+	ny = 600;
+	ns = 200;
 }
 
 // http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf
@@ -363,9 +375,10 @@ int main(int argc, char* argv[])
 	//high_quality( nx, ny, ns );
 	//mid_quality( nx, ny, ns );
 	//fast_quality( nx, ny, ns );
-	low_res_high_sample( nx, ny, ns );
+	//low_res_high_sample( nx, ny, ns );
 	//mid_res_high_sample( nx, ny, ns );
 	//high_res_high_sample( nx, ny, ns );
+	square_low_res_high_sample( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{
