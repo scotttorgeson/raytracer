@@ -370,6 +370,14 @@ void square_low_res_low_sample( int& nx, int& ny, int& ns )
 	ns = 50;
 }
 
+// 27797 seconds for final scene, computer might have fallen asleep
+void square_high_res_super_high_sample( int& nx, int& ny, int& ns )
+{
+	nx = 800;
+	ny = 800;
+	ns = 10000;
+}
+
 // http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf
 // https://github.com/petershirley/raytracinginoneweekend
 int main(int argc, char* argv[])
@@ -402,7 +410,8 @@ int main(int argc, char* argv[])
 	//mid_res_high_sample( nx, ny, ns );
 	//high_res_high_sample( nx, ny, ns );
 	//square_low_res_high_sample( nx, ny, ns );
-	square_low_res_low_sample( nx, ny, ns );
+	//square_low_res_low_sample( nx, ny, ns );
+	square_high_res_super_high_sample( nx, ny, ns );
 
 	if ( !init_sdl( nx, ny ) )
 	{
